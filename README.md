@@ -33,7 +33,7 @@ Or install it yourself as:
   tokenizer = RsPathTokenizer::Tokenizer.new( tokens_data )
 
   # search tokens in specified URL
-  found_tokens = tokenizer.tokenize( 'balashiha-gorodskoj-okrug-drugoi' ) )
+  found_tokens = tokenizer.tokenize( 'balashiha-gorodskoj-okrug-drugoi' )
 
 ```
 
