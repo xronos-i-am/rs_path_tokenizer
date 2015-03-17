@@ -47,13 +47,22 @@ describe RsPathTokenizer do
     expect( @tokenizer.tokenize( 'balashiha-price-100-expensive' ) ).to eq results
   end
 
-  it 'returns price range' do
+  it 'returns date' do
     @tokens_data['at-*'] = []
 
     @tokenizer = RsPathTokenizer::Tokenizer.new( @tokens_data )
 
     results = {"balashiha"=>["r", "balashiha"], 'at-*' => ["at", "01/01/2020"], "expensive"=>["sort", "expensive"]}
     expect( @tokenizer.tokenize( 'balashiha-price-0-100-at-01/01/2020-expensive' ) ).to eq results
+
+    tokens_data = {}
+    tokens_data['in-auckland'] = ['city', 'auckland']
+    tokens_data['at-*'] = []
+
+    tokenizer = RsPathTokenizer::Tokenizer.new( tokens_data )
+
+    results = {'in-auckland' => ["city", "auckland"], "at-*"=>["at", "05.06.2015"]}
+    expect( tokenizer.tokenize( 'in-auckland-at-05.06.2015' ) ).to eq results
   end
 
   it 'nothing found' do
