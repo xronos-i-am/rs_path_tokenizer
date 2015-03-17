@@ -7,8 +7,9 @@ module RsPathTokenizer
       return if tokens.nil?
       @single_tokens = {}
       tokens.keys.each do |t|
-        parts = t.split("-")
+        parts = url2token(t)
         st = parts[0]
+        raise Error.new('Token cant starts with asterisk') if st == '*'
         @single_tokens[st] = [] if @single_tokens[st].nil?
         @single_tokens[st].push parts
       end
@@ -35,27 +36,30 @@ module RsPathTokenizer
 
       # all results
       def tokenize_all(string)
-        array = string.split("-")
+        array = url2token(string)
         raise Error.new('Too long URL') if array.length > 500
         possible_tokens = Hash[@single_tokens.keys.select do |st|
           array.include?(st)
         end.map do |st|
           [st, @single_tokens[st]]
         end]
+        @out_token_map = @token_map
         sort_results(recursive_parse(array, possible_tokens))
       end
 
       def sort_results(results)
         results.sort do |a, b|
-          puts "sorting: #{a.inspect} #{b.inspect} #{a.flatten.length <=> b.flatten.length}" if PT_DEBUG
-          b.flatten.length <=> a.flatten.length
+          result = b.flatten.length <=> a.flatten.length
+          result = b.length <=> a.length if result == 0
+          puts "sorting: #{a.inspect} #{b.inspect} #{result}" if PT_DEBUG
+          result
         end
       end
 
       def result_to_hash(array)
         Hash[array.map do |e|
-          k = e.join('-')
-          [k, @token_map[k]]
+          k = token2url(e)
+          [k, @out_token_map[k]]
         end]
       end
 
@@ -77,10 +81,14 @@ module RsPathTokenizer
         puts "#{"  " * limiter}possible tokens for #{st} are: #{tokens.inspect}" if PT_DEBUG
 
         tokens.each do |token|
-          found, rest = try_match(token, array)
+          found, out, rest = try_match(token, array)
           puts "#{"  " * limiter}matching #{token.inspect}" if PT_DEBUG
 
           if found
+            if out != token
+              @out_token_map[token2url(token)] = out
+            end
+
             puts "#{"  " * limiter}found a token: #{token.inspect}, parsing rest: #{rest.inspect}" if PT_DEBUG
             more = recursive_parse(rest.dup, possible_tokens, limiter + 1)
             results = merge_results(results, token, more)
@@ -122,11 +130,35 @@ module RsPathTokenizer
       end
 
       def try_match(token, array)
-        if token != array.slice(0, token.size)
-          return [false, array]
+        found, out = [], []
+        rest = array.dup
+
+        token.each do |token_part|
+          url_part = rest.shift
+          break if url_part.nil?
+
+          if token_part == '*'
+            out.push url_part
+            found.push token_part
+
+          elsif token_part == url_part
+            found.push token_part
+            out.push token_part
+          end
         end
 
-        [true, array.slice( token.size..-1 )]
+        if found == token
+          [true, out, rest]
+        else
+          [false, out, array]
+        end
+      end
+
+      def token2url(token)
+        token.join('-')
+      end
+      def url2token(url)
+        url.split("-")
       end
   end
 end

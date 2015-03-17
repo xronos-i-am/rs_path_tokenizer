@@ -20,7 +20,7 @@ Or install it yourself as:
 
 ## Usage
 
-```
+```ruby
   # define tokens data
   # hash key - token's URL code
   # hash value - returned property & value (ie for SQL query)
@@ -28,12 +28,22 @@ Or install it yourself as:
     'balashiha' => ['region', 'balashiha'],
     'balashiha-gorodskoj-okrug' => ['region', 'balashiha-gorodskoj-okrug'],
     'gorodskoj-okrug-drugoi' => ['region', 'gorodskoj-okrug-drugoi'],
+    # price from
+    'price-*' => ['price', nil],
+    # price from any to any (including from 0 to any)
+    'price-*-*' => ['price', nil],
+    'expensive' => ['sort', 'expensive']
   }
 
-  tokenizer = RsPathTokenizer::Tokenizer.new( tokens_data )
+  tokenizer = RsPathTokenizer::Tokenizer.new(tokens_data)
 
   # search tokens in specified URL
-  found_tokens = tokenizer.tokenize( 'balashiha-gorodskoj-okrug-drugoi' )
+  found_tokens = tokenizer.tokenize('balashiha-gorodskoj-okrug-drugoi-price-100-expensive')
+
+  # {"balashiha"=>["region", "balashiha"],
+  #  "gorodskoj-okrug-drugoi"=>["region", "gorodskoj-okrug-drugoi"],
+  #  "price-*"=>["price", "100"],
+  #  "expensive"=>["sort", "expensive"]}
 
 ```
 
