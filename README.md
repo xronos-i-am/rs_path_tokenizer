@@ -29,9 +29,9 @@ Or install it yourself as:
     'balashiha-gorodskoj-okrug' => ['region', 'balashiha-gorodskoj-okrug'],
     'gorodskoj-okrug-drugoi' => ['region', 'gorodskoj-okrug-drugoi'],
     # price from
-    'price-*' => ['price', nil],
+    'price-*' => [],
     # price from any to any (including from 0 to any)
-    'price-*-*' => ['price', nil],
+    'price-*-*' => [],
     'expensive' => ['sort', 'expensive']
   }
 

@@ -29,8 +29,8 @@ describe RsPathTokenizer do
   end
 
   it 'returns price range' do
-    @tokens_data['price-*-*'] = ["price", nil]
-    @tokens_data['price-*'] = ["price", nil]
+    @tokens_data['price-*-*'] = []
+    @tokens_data['price-*'] = []
 
     @tokenizer = RsPathTokenizer::Tokenizer.new( @tokens_data )
 
@@ -45,6 +45,15 @@ describe RsPathTokenizer do
 
     results = {"balashiha"=>["r", "balashiha"], "price-*"=>["price", "100"], "expensive"=>["sort", "expensive"]}
     expect( @tokenizer.tokenize( 'balashiha-price-100-expensive' ) ).to eq results
+  end
+
+  it 'returns price range' do
+    @tokens_data['at-*'] = []
+
+    @tokenizer = RsPathTokenizer::Tokenizer.new( @tokens_data )
+
+    results = {"balashiha"=>["r", "balashiha"], 'at-*' => ["at", "01/01/2020"], "expensive"=>["sort", "expensive"]}
+    expect( @tokenizer.tokenize( 'balashiha-price-0-100-at-01/01/2020-expensive' ) ).to eq results
   end
 
   it 'nothing found' do
