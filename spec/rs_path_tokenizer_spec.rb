@@ -45,6 +45,15 @@ describe RsPathTokenizer do
 
     results = {"balashiha"=>["r", "balashiha"], "price-*"=>["price", "100"], "expensive"=>["sort", "expensive"]}
     expect( @tokenizer.tokenize( 'balashiha-price-100-expensive' ) ).to eq results
+
+    tokens_data = {}
+    tokens_data['cost-*-*'] = []
+    tokens_data['cost-*'] = []
+
+    tokenizer = RsPathTokenizer::Tokenizer.new( tokens_data )
+
+    results = {"cost-*-*"=>["cost", "100", "300"]}
+    expect( tokenizer.tokenize( 'balashiha-cost-100-300' ) ).to eq results
   end
 
   it 'returns date' do
